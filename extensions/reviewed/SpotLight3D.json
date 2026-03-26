@@ -294,6 +294,53 @@
       ],
       "parameters": [],
       "objectGroups": []
+    },
+    {
+      "description": "Check if the events are running for the editor.",
+      "fullName": "Editor is running",
+      "functionType": "Condition",
+      "name": "IsInGameEdition",
+      "private": true,
+      "sentence": "Events are running for the editor",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "const game = runtimeScene.getGame();\r",
+            "eventsFunctionContext.returnValue = game.isInGameEdition && game.isInGameEdition();"
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false
+        }
+      ],
+      "parameters": [],
+      "objectGroups": []
+    },
+    {
+      "description": "Check if effects are hidden in the editor.",
+      "fullName": "Effects are hidden",
+      "functionType": "Condition",
+      "name": "AreEffectsHidden",
+      "private": true,
+      "sentence": "Effects are hidden in the editor",
+      "events": [
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": [
+            "const game = runtimeScene.getGame();\r",
+            "const editor = game.getInGameEditor ? game.getInGameEditor() : null;\r",
+            "\r",
+            "eventsFunctionContext.returnValue = editor && editor.areEffectsHidden();\r",
+            ""
+          ],
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": true
+        }
+      ],
+      "parameters": [],
+      "objectGroups": []
     }
   ],
   "eventsFunctionsFolderStructure": {
@@ -301,6 +348,12 @@
     "children": [
       {
         "functionName": "DefineHelperClasses"
+      },
+      {
+        "functionName": "IsInGameEdition"
+      },
+      {
+        "functionName": "AreEffectsHidden"
       }
     ]
   },
@@ -516,6 +569,7 @@
                 "object._renderer = particleEmitter3DRenderer;",
                 "if (game.isInGameEdition && game.isInGameEdition()) {",
                 "    const particleEmitterHelper = new ParticleEmitterHelper(object);",
+                "    particleEmitterHelper.add(spotLight);",
                 "    particleEmitter3DRenderer._threeGroup = particleEmitterHelper;",
                 "    layer.getRenderer().add3DRendererObject(particleEmitterHelper);",
                 "}",
@@ -543,7 +597,14 @@
                     "Object",
                     ""
                   ]
-                },
+                }
+              ]
+            },
+            {
+              "disabled": true,
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [],
+              "actions": [
                 {
                   "type": {
                     "value": "SpotLight3D::SpotLight3D::SetRotationCenter"
@@ -792,17 +853,33 @@
           "sentence": "Update graphical helper of _PARAM0_",
           "events": [
             {
-              "type": "BuiltinCommonInstructions::JsCode",
-              "inlineCode": [
-                "const game = runtimeScene.getGame();",
-                "if (game.isInGameEdition && game.isInGameEdition()) {",
-                "    const particleEmitterHelper = objects[0].get3DRendererObject();",
-                "    particleEmitterHelper.update();",
-                "}"
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [
+                {
+                  "type": {
+                    "value": "SpotLight3D::IsInGameEdition"
+                  },
+                  "parameters": [
+                    "",
+                    ""
+                  ]
+                }
               ],
-              "parameterObjects": "Object",
-              "useStrict": true,
-              "eventsSheetExpanded": false
+              "actions": [],
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::JsCode",
+                  "inlineCode": [
+                    "",
+                    "const particleEmitterHelper = objects[0].get3DRendererObject();",
+                    "particleEmitterHelper.update();",
+                    ""
+                  ],
+                  "parameterObjects": "Object",
+                  "useStrict": true,
+                  "eventsSheetExpanded": false
+                }
+              ]
             }
           ],
           "parameters": [
@@ -1385,6 +1462,64 @@
             }
           ],
           "objectGroups": []
+        },
+        {
+          "fullName": "",
+          "functionType": "Action",
+          "name": "doStepPostEvents",
+          "sentence": "",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [
+                {
+                  "type": {
+                    "value": "SpotLight3D::IsInGameEdition"
+                  },
+                  "parameters": [
+                    "",
+                    ""
+                  ]
+                }
+              ],
+              "actions": [],
+              "events": [
+                {
+                  "type": "BuiltinCommonInstructions::JsCode",
+                  "inlineCode": [
+                    "const game = runtimeScene.getGame();",
+                    "const editor = game.getInGameEditor ? game.getInGameEditor() : null;",
+                    "const object = objects[0];",
+                    "",
+                    "if (editor) {",
+                    "    /** @type {THREE.SpotLight} */",
+                    "    //@ts-ignore",
+                    "    const spotLight = object.__spotLight;",
+                    "    if (editor.areEffectsHidden()) {",
+                    "        spotLight.removeFromParent();",
+                    "    }",
+                    "    else if (!spotLight.parent) {",
+                    "        object.get3DRendererObject().add(spotLight);",
+                    "    }",
+                    "}",
+                    ""
+                  ],
+                  "parameterObjects": "Object",
+                  "useStrict": true,
+                  "eventsSheetExpanded": true
+                }
+              ]
+            }
+          ],
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            }
+          ],
+          "objectGroups": []
         }
       ],
       "eventsFunctionsFolderStructure": {
@@ -1392,6 +1527,9 @@
         "children": [
           {
             "functionName": "onCreated"
+          },
+          {
+            "functionName": "doStepPostEvents"
           },
           {
             "functionName": "onDestroy"
