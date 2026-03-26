@@ -19,20 +19,6 @@
   "authorIds": [
     "IWykYNRvhCZBN3vEgKEbBPOR3Oc2"
   ],
-  "changelog": [
-    {
-      "version": "3.0.0",
-      "breaking": "- the object rotates the other way around X axis."
-    },
-    {
-      "version": "2.0.0",
-      "breaking": "- Object properties for position and rotation have been removed. They must be set with the instance editor or the action."
-    },
-    {
-      "version": "1.0.0",
-      "breaking": "- Particles were 3 times too small."
-    }
-  ],
   "dependencies": [],
   "globalVariables": [],
   "sceneVariables": [],
@@ -97,7 +83,7 @@
             "",
             "const coneLength = 64;",
             "",
-            "class ParticleEmitterHelper extends THREE.Object3D {",
+            "class SpotLightHelper extends THREE.Object3D {",
             "    /** @type {gdjs.CustomRuntimeObject3D} */",
             "    object;",
             "    /** @type {THREE.LineSegments} */",
@@ -113,7 +99,7 @@
             "    constructor(object) {",
             "        super();",
             "        this.object = object;",
-            "        this.type = 'ParticleEmitterHelper';",
+            "        this.type = 'SpotLightHelper';",
             "",
             "        const coneGeometry = new THREE.BufferGeometry();",
             "        const conePositions = [",
@@ -214,7 +200,7 @@
             "    threeColor.w = integerOpacity / 255;",
             "};",
             "",
-            "class ParticleEmitterAdapter {",
+            "class SpotLightAdapter {",
             "    /**",
             "     * @param spotLight {THREE.SpotLight}",
             "     */",
@@ -227,7 +213,6 @@
             "     */",
             "    setColor(color) {",
             "        setThreeColor(color, this.spotLight.color);",
-            "        console.log(color, this.spotLight.color);",
             "    }",
             "",
             "    /**",
@@ -283,8 +268,8 @@
             "//@ts-ignore",
             "gdjs.__spotLight3DExtension = {",
             "    ParticleEmitter3DRenderer,",
-            "    ParticleEmitterAdapter,",
-            "    ParticleEmitterHelper,",
+            "    SpotLightAdapter,",
+            "    SpotLightHelper,",
             "}"
           ],
           "parameterObjects": "",
@@ -515,28 +500,15 @@
               "type": "BuiltinCommonInstructions::JsCode",
               "inlineCode": [
                 "const {",
-                "    ParticleEmitterAdapter,",
+                "    SpotLightAdapter,",
                 "    ParticleEmitter3DRenderer,",
-                "    ParticleEmitterHelper,",
+                "    SpotLightHelper,",
                 "    //@ts-ignore",
                 "} = gdjs.__spotLight3DExtension;",
                 "",
                 "/** @type {gdjs.CustomRuntimeObject3D} */",
                 "//@ts-ignore",
                 "const object = objects[0];",
-                "// // Force the size of the object because it doesn't contain any instance.",
-                "// object._innerArea = {",
-                "//     min: [-16, -16, -16],",
-                "//     max: [16, 16, 16],",
-                "// };",
-                "// const hitbox = new gdjs.Polygon();",
-                "// hitbox.vertices = [[-16, -16], [16, -16], [16, 16], [-16, 16]];",
-                "// object._untransformedHitBoxes = [hitbox];",
-                "// object._unrotatedAABB.min[0] = -16;",
-                "// object._unrotatedAABB.min[1] = -16;",
-                "// object._unrotatedAABB.max[0] = 16;",
-                "// object._unrotatedAABB.max[1] = 16;",
-                "// object._updateUntransformedHitBoxes = () => { };",
                 "",
                 "// Here runtimeScene is the gdjs.CustomRuntimeObjectInstanceContainer inside the custom object.",
                 "const gameScene = object.getRuntimeScene();",
@@ -563,15 +535,15 @@
                 "//@ts-ignore",
                 "object.__spotLight = spotLight;",
                 "//@ts-ignore",
-                "object.__particleEmitterAdapter = new ParticleEmitterAdapter(spotLight);",
+                "object.__spotLightAdapter = new SpotLightAdapter(spotLight);",
                 "",
                 "const particleEmitter3DRenderer = new ParticleEmitter3DRenderer(object, object._instanceContainer, object.getInstanceContainer());",
                 "object._renderer = particleEmitter3DRenderer;",
                 "if (game.isInGameEdition && game.isInGameEdition()) {",
-                "    const particleEmitterHelper = new ParticleEmitterHelper(object);",
-                "    particleEmitterHelper.add(spotLight);",
-                "    particleEmitter3DRenderer._threeGroup = particleEmitterHelper;",
-                "    layer.getRenderer().add3DRendererObject(particleEmitterHelper);",
+                "    const spotLightHelper = new SpotLightHelper(object);",
+                "    spotLightHelper.add(spotLight);",
+                "    particleEmitter3DRenderer._threeGroup = spotLightHelper;",
+                "    layer.getRenderer().add3DRendererObject(spotLightHelper);",
                 "}",
                 "else {",
                 "    particleEmitter3DRenderer._threeGroup = spotLight;",
@@ -596,24 +568,6 @@
                   "parameters": [
                     "Object",
                     ""
-                  ]
-                }
-              ]
-            },
-            {
-              "disabled": true,
-              "type": "BuiltinCommonInstructions::Standard",
-              "conditions": [],
-              "actions": [
-                {
-                  "type": {
-                    "value": "SpotLight3D::SpotLight3D::SetRotationCenter"
-                  },
-                  "parameters": [
-                    "Object",
-                    "0",
-                    "0",
-                    "0"
                   ]
                 }
               ]
@@ -644,6 +598,7 @@
                 "const gameScene = object.getRuntimeScene();",
                 "",
                 "object.__spotLight.dispose();",
+                "object.get3DRendererObject().dispose();",
                 ""
               ],
               "parameterObjects": "Object",
@@ -870,9 +825,8 @@
                 {
                   "type": "BuiltinCommonInstructions::JsCode",
                   "inlineCode": [
-                    "",
-                    "const particleEmitterHelper = objects[0].get3DRendererObject();",
-                    "particleEmitterHelper.update();",
+                    "const spotLightHelper = objects[0].get3DRendererObject();",
+                    "spotLightHelper.update();",
                     ""
                   ],
                   "parameterObjects": "Object",
@@ -905,7 +859,7 @@
                 "/** @type {gdjs.CustomRuntimeObject3D} */\r",
                 "const object = objects[0];\r",
                 "const resourceName = object._getImage();\r",
-                "object.__particleEmitterAdapter.setImage(resourceName);"
+                "object.__spotLightAdapter.setImage(resourceName);"
               ],
               "parameterObjects": "Object",
               "useStrict": true,
@@ -986,7 +940,7 @@
                 "const object = objects[0];\r",
                 "const coneAngle = eventsFunctionContext.getArgument(\"Value\");\r",
                 "\r",
-                "object.__particleEmitterAdapter.setConeAngle(coneAngle);\r",
+                "object.__spotLightAdapter.setConeAngle(coneAngle);\r",
                 ""
               ],
               "parameterObjects": "Object",
@@ -1068,7 +1022,7 @@
                 "const object = objects[0];\r",
                 "const color = eventsFunctionContext.getArgument(\"Value\");\r",
                 "\r",
-                "object.__particleEmitterAdapter.setColor(color);"
+                "object.__spotLightAdapter.setColor(color);"
               ],
               "parameterObjects": "Object",
               "useStrict": true,
@@ -1149,7 +1103,7 @@
                 "const object = objects[0];\r",
                 "const value = eventsFunctionContext.getArgument(\"Value\");\r",
                 "\r",
-                "object.__particleEmitterAdapter.setSmoothing(value);"
+                "object.__spotLightAdapter.setSmoothing(value);"
               ],
               "parameterObjects": "Object",
               "useStrict": true,
@@ -1230,7 +1184,7 @@
                 "const object = objects[0];\r",
                 "const value = eventsFunctionContext.getArgument(\"Value\");\r",
                 "\r",
-                "object.__particleEmitterAdapter.setIntensity(value);\r",
+                "object.__spotLightAdapter.setIntensity(value);\r",
                 ""
               ],
               "parameterObjects": "Object",
@@ -1312,7 +1266,7 @@
                 "const object = objects[0];\r",
                 "const value = eventsFunctionContext.getArgument(\"Value\");\r",
                 "\r",
-                "object.__particleEmitterAdapter.setSmoothing(value);"
+                "object.__spotLightAdapter.setSmoothing(value);"
               ],
               "parameterObjects": "Object",
               "useStrict": true,
@@ -1439,7 +1393,7 @@
                 "const object = objects[0];\r",
                 "const value = eventsFunctionContext.getArgument(\"Value\");\r",
                 "\r",
-                "object.__particleEmitterAdapter.setCastingShadow(value);"
+                "object.__spotLightAdapter.setCastingShadow(value);"
               ],
               "parameterObjects": "Object",
               "useStrict": true,
