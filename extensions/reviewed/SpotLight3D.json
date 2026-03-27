@@ -557,13 +557,12 @@
                 "object._renderer = particleEmitter3DRenderer;",
                 "if (game.isInGameEdition && game.isInGameEdition()) {",
                 "    const spotLightHelper = new SpotLightHelper(object);",
-                "    spotLightHelper.add(spotLight);",
                 "    particleEmitter3DRenderer._threeGroup = spotLightHelper;",
                 "    layer.getRenderer().add3DRendererObject(spotLightHelper);",
                 "}",
                 "else {",
                 "    particleEmitter3DRenderer._threeGroup = spotLight;",
-                "    layer.getRenderer().add3DRendererObject(spotLight);",
+                "    // The light is added in Three.js scene from doStepPostEvents",
                 "}",
                 "",
                 "spotLight.updateMatrixWorld(true);",
@@ -1440,45 +1439,60 @@
           "sentence": "",
           "events": [
             {
-              "type": "BuiltinCommonInstructions::Standard",
-              "conditions": [
-                {
-                  "type": {
-                    "value": "SpotLight3D::IsInGameEdition"
-                  },
-                  "parameters": [
-                    "",
-                    ""
-                  ]
-                }
+              "type": "BuiltinCommonInstructions::JsCode",
+              "inlineCode": [
+                "/** @type {gdjs.CustomRuntimeObject3D} */",
+                "//@ts-ignore",
+                "const object = objects[0];",
+                "const game = runtimeScene.getGame();",
+                "const editor = game.getInGameEditor ? game.getInGameEditor() : null;",
+                "/** @type {THREE.SpotLight} */",
+                "//@ts-ignore",
+                "const spotLight = object.__spotLight;",
+                "",
+                "if (editor) {",
+                "    if (editor._selection.getLastSelectedObject() !== object) {",
+                "        spotLight.removeFromParent();",
+                "    }",
+                "    else if (!spotLight.parent) {",
+                "        object.get3DRendererObject().add(spotLight);",
+                "    }",
+                "}",
+                "else if (!object.isHidden()) {",
+                "    const runtimeScene = object.getRuntimeScene();",
+                "    let instanceContainer = object.getInstanceContainer();",
+                "",
+                "    let rootObject = object;",
+                "    while (object.getInstanceContainer()",
+                "        //@ts-ignore",
+                "        .getOwner) {",
+                "        rootObject = object.getInstanceContainer()",
+                "            //@ts-ignore",
+                "            .getOwner();",
+                "    }",
+                "    const layerName = rootObject.getLayer();",
+                "",
+                "    const cameraX = gdjs.evtTools.camera.getCameraX(runtimeScene, layerName, 0);",
+                "    const cameraY = gdjs.evtTools.camera.getCameraY(runtimeScene, layerName, 0);",
+                "    const cameraZ = gdjs.scene3d.camera.getCameraZ(runtimeScene, layerName, 0);",
+                "    const deltaX = rootObject.getX() - cameraX;",
+                "    const deltaY = rootObject.getY() - cameraY;",
+                "    const deltaZ = rootObject.getZ() - cameraZ;",
+                "    //@ts-ignore",
+                "    const distanceMax = object._getVisibilityDistanceMax()",
+                "    if (deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ > distanceMax * distanceMax) {",
+                "        if (spotLight.parent) {",
+                "        }",
+                "        spotLight.removeFromParent();",
+                "    }",
+                "    else if (!spotLight.parent) {",
+                "        rootObject.getInstanceContainer().getLayer(layerName).get3DRendererObject().add(spotLight);",
+                "    }",
+                "}"
               ],
-              "actions": [],
-              "events": [
-                {
-                  "type": "BuiltinCommonInstructions::JsCode",
-                  "inlineCode": [
-                    "const game = runtimeScene.getGame();",
-                    "const editor = game.getInGameEditor ? game.getInGameEditor() : null;",
-                    "const object = objects[0];",
-                    "",
-                    "if (editor) {",
-                    "    /** @type {THREE.SpotLight} */",
-                    "    //@ts-ignore",
-                    "    const spotLight = object.__spotLight;",
-                    "    if (editor.areEffectsHidden()) {",
-                    "        spotLight.removeFromParent();",
-                    "    }",
-                    "    else if (!spotLight.parent) {",
-                    "        object.get3DRendererObject().add(spotLight);",
-                    "    }",
-                    "}",
-                    ""
-                  ],
-                  "parameterObjects": "Object",
-                  "useStrict": true,
-                  "eventsSheetExpanded": true
-                }
-              ]
+              "parameterObjects": "Object",
+              "useStrict": true,
+              "eventsSheetExpanded": true
             }
           ],
           "parameters": [
@@ -1715,6 +1729,13 @@
           "label": "Casting shadow",
           "advanced": true,
           "name": "IsCastingShadow"
+        },
+        {
+          "value": "1000",
+          "type": "Number",
+          "label": "Visibilty distance",
+          "advanced": true,
+          "name": "VisibilityDistanceMax"
         }
       ],
       "propertiesFolderStructure": {
@@ -1734,6 +1755,9 @@
           },
           {
             "propertyName": "IsCastingShadow"
+          },
+          {
+            "propertyName": "VisibilityDistanceMax"
           },
           {
             "folderName": "Cone",
