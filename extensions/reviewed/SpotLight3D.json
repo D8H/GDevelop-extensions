@@ -9,9 +9,9 @@
   "iconUrl": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0ibWRpLWZsYXNobGlnaHQiIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNOSwxMEw2LDVIMThMMTUsMTBIOU0xOCw0SDZWMkgxOFY0TTksMjJWMTFIMTVWMjJIOU0xMiwxM0ExLDEgMCAwLDAgMTEsMTRBMSwxIDAgMCwwIDEyLDE1QTEsMSAwIDAsMCAxMywxNEExLDEgMCAwLDAgMTIsMTNaIiAvPjwvc3ZnPg==",
   "name": "SpotLight3D",
   "previewIconUrl": "https://asset-resources.gdevelop.io/public-resources/Icons/b627f8e676b3aac26945b2c38db0cfa787d34d2eff23755d4eb1289452f6cd28_flashlight.svg",
-  "shortDescription": "",
+  "shortDescription": "Light up a cone like a flashlight.",
   "version": "1.0.0",
-  "description": "",
+  "description": "Light up a cone like a flashlight.",
   "tags": [
     "3d",
     "light"
@@ -42,7 +42,7 @@
             "",
             "const game = runtimeScene.getGame();",
             "",
-            "class ParticleEmitter3DRenderer extends gdjs.CustomRuntimeObject3DRenderer {",
+            "class SpotLight3DRenderer extends gdjs.CustomRuntimeObject3DRenderer {",
             "    constructor(",
             "        object,",
             "        instanceContainer,",
@@ -282,57 +282,10 @@
             "",
             "//@ts-ignore",
             "gdjs.__spotLight3DExtension = {",
-            "    ParticleEmitter3DRenderer,",
+            "    SpotLight3DRenderer,",
             "    SpotLightAdapter,",
             "    SpotLightHelper,",
             "}"
-          ],
-          "parameterObjects": "",
-          "useStrict": true,
-          "eventsSheetExpanded": true
-        }
-      ],
-      "parameters": [],
-      "objectGroups": []
-    },
-    {
-      "description": "Check if the events are running for the editor.",
-      "fullName": "Editor is running",
-      "functionType": "Condition",
-      "name": "IsInGameEdition",
-      "private": true,
-      "sentence": "Events are running for the editor",
-      "events": [
-        {
-          "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": [
-            "const game = runtimeScene.getGame();\r",
-            "eventsFunctionContext.returnValue = game.isInGameEdition && game.isInGameEdition();"
-          ],
-          "parameterObjects": "",
-          "useStrict": true,
-          "eventsSheetExpanded": false
-        }
-      ],
-      "parameters": [],
-      "objectGroups": []
-    },
-    {
-      "description": "Check if effects are hidden in the editor.",
-      "fullName": "Effects are hidden",
-      "functionType": "Condition",
-      "name": "AreEffectsHidden",
-      "private": true,
-      "sentence": "Effects are hidden in the editor",
-      "events": [
-        {
-          "type": "BuiltinCommonInstructions::JsCode",
-          "inlineCode": [
-            "const game = runtimeScene.getGame();\r",
-            "const editor = game.getInGameEditor ? game.getInGameEditor() : null;\r",
-            "\r",
-            "eventsFunctionContext.returnValue = editor && editor.areEffectsHidden();\r",
-            ""
           ],
           "parameterObjects": "",
           "useStrict": true,
@@ -348,12 +301,6 @@
     "children": [
       {
         "functionName": "DefineHelperClasses"
-      },
-      {
-        "functionName": "IsInGameEdition"
-      },
-      {
-        "functionName": "AreEffectsHidden"
       }
     ]
   },
@@ -367,7 +314,7 @@
       "areaMinY": -40,
       "areaMinZ": -40,
       "defaultName": "SpotLight",
-      "description": "",
+      "description": "Light up a cone like a flashlight.",
       "fullName": "3D spot light",
       "is3D": true,
       "isUsingLegacyInstancesRenderer": false,
@@ -516,7 +463,7 @@
               "inlineCode": [
                 "const {",
                 "    SpotLightAdapter,",
-                "    ParticleEmitter3DRenderer,",
+                "    SpotLight3DRenderer,",
                 "    SpotLightHelper,",
                 "    //@ts-ignore",
                 "} = gdjs.__spotLight3DExtension;",
@@ -553,19 +500,31 @@
                 "//@ts-ignore",
                 "object.__spotLightAdapter = new SpotLightAdapter(object, spotLight);",
                 "",
-                "const particleEmitter3DRenderer = new ParticleEmitter3DRenderer(object, object._instanceContainer, object.getInstanceContainer());",
-                "object._renderer = particleEmitter3DRenderer;",
+                "const spotLight3DRenderer = new SpotLight3DRenderer(object, object._instanceContainer, object.getInstanceContainer());",
+                "object._renderer = spotLight3DRenderer;",
                 "if (game.isInGameEdition && game.isInGameEdition()) {",
                 "    const spotLightHelper = new SpotLightHelper(object);",
-                "    particleEmitter3DRenderer._threeGroup = spotLightHelper;",
+                "    spotLight3DRenderer._threeGroup = spotLightHelper;",
                 "    layer.getRenderer().add3DRendererObject(spotLightHelper);",
                 "}",
                 "else {",
-                "    particleEmitter3DRenderer._threeGroup = spotLight;",
+                "    spotLight3DRenderer._threeGroup = spotLight;",
                 "    // The light is added in Three.js scene from doStepPostEvents",
                 "}",
                 "",
                 "spotLight.updateMatrixWorld(true);",
+                "",
+                "// Allow to tween the light color.",
+                "//@ts-ignore",
+                "if (!object.setColor && !object.getColor) {",
+                "    const prototype = Object.getPrototypeOf(object);",
+                "    prototype.setColor = function(tint) {",
+                "        this.SetColor(tint, eventsFunctionContext);",
+                "    }",
+                "    prototype.getColor = function() {",
+                "        return this.Color(eventsFunctionContext);",
+                "    }",
+                "}",
                 ""
               ],
               "parameterObjects": "Object",
