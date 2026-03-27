@@ -192,20 +192,35 @@
             "    threeColor.b = integerColor[2] / 255;",
             "};",
             "",
-            "/**",
-            " * @param {number} integerOpacity",
-            " * @param {THREE.Vector4} threeColor",
-            " */",
-            "const setThreeOpacity = (integerOpacity, threeColor = new THREE.Vector4()) => {",
-            "    threeColor.w = integerOpacity / 255;",
-            "};",
-            "",
             "class SpotLightAdapter {",
             "    /**",
+            "     * @param object {gdjs.CustomRuntimeObject3D}",
             "     * @param spotLight {THREE.SpotLight}",
             "     */",
-            "    constructor(spotLight) {",
+            "    constructor(object, spotLight) {",
+            "        this.object = object;",
             "        this.spotLight = spotLight;",
+            "    }",
+            "",
+            "    /**",
+            "     * @param targetX {number}",
+            "     * @param targetY {number}",
+            "     * @param targetZ {number}",
+            "     */",
+            "    lookAtPosition(targetX, targetY, targetZ) {",
+            "        // Remove from the parent to avoid the scene scale of -1 on Y to mess with the formula.",
+            "        const parent = this.spotLight.parent;",
+            "        this.spotLight.parent = null;",
+            "        this.spotLight.lookAt(targetX, targetY, targetZ);",
+            "        this.spotLight.parent = parent;",
+            "",
+            "        // Angle setters update Three.js angles, so we save them first.",
+            "        const rotationX = gdjs.toDegrees(this.spotLight.rotation.x);",
+            "        const rotationY = gdjs.toDegrees(this.spotLight.rotation.y);",
+            "        const rotationZ = gdjs.toDegrees(this.spotLight.rotation.z);",
+            "        this.object.setRotationX(rotationX);",
+            "        this.object.setRotationY(rotationY);",
+            "        this.object.setAngle(rotationZ + 90);",
             "    }",
             "",
             "    /**",
@@ -531,11 +546,12 @@
                 "spotLight.shadow.camera.fov = 30;",
                 "spotLight.add(spotLight.target);",
                 "spotLight.target.position.x = 100;",
+                "spotLight.up.set(0, 0, 1);",
                 "spotLight.shadow.camera.up.set(0, 0, 1);",
                 "//@ts-ignore",
                 "object.__spotLight = spotLight;",
                 "//@ts-ignore",
-                "object.__spotLightAdapter = new SpotLightAdapter(spotLight);",
+                "object.__spotLightAdapter = new SpotLightAdapter(object, spotLight);",
                 "",
                 "const particleEmitter3DRenderer = new ParticleEmitter3DRenderer(object, object._instanceContainer, object.getInstanceContainer());",
                 "object._renderer = particleEmitter3DRenderer;",
@@ -1474,6 +1490,102 @@
             }
           ],
           "objectGroups": []
+        },
+        {
+          "description": "Rotate the light to light up a position.",
+          "fullName": "Look at position",
+          "functionType": "Action",
+          "group": "Angle",
+          "name": "LookAtPosition",
+          "sentence": "_PARAM0_ look at _PARAM1_ ; _PARAM2_ ; _PARAM3_",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::JsCode",
+              "inlineCode": [
+                "const object = objects[0];\r",
+                "const targetX = eventsFunctionContext.getArgument(\"TargetX\");\r",
+                "const targetY = eventsFunctionContext.getArgument(\"TargetY\");\r",
+                "const targetZ = eventsFunctionContext.getArgument(\"TargetZ\");\r",
+                "\r",
+                "object.__spotLightAdapter.lookAtPosition(targetX, targetY, targetZ);"
+              ],
+              "parameterObjects": "Object",
+              "useStrict": true,
+              "eventsSheetExpanded": false
+            }
+          ],
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            },
+            {
+              "description": "Target X",
+              "name": "TargetX",
+              "type": "expression"
+            },
+            {
+              "description": "Target Y",
+              "name": "TargetY",
+              "type": "expression"
+            },
+            {
+              "description": "Target Z",
+              "name": "TargetZ",
+              "type": "expression"
+            }
+          ],
+          "objectGroups": []
+        },
+        {
+          "description": "Rotate the light to light up an object.",
+          "fullName": "Look at object",
+          "functionType": "Action",
+          "group": "Angle",
+          "name": "LookAtObject",
+          "sentence": "_PARAM0_ look at _PARAM1_",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [],
+              "actions": [
+                {
+                  "type": {
+                    "value": "SpotLight3D::SpotLight3D::LookAtPosition"
+                  },
+                  "parameters": [
+                    "Object",
+                    "Target.CenterX()",
+                    "Target.CenterY()",
+                    "Target.Object3D::CenterZ()",
+                    ""
+                  ]
+                }
+              ]
+            }
+          ],
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            },
+            {
+              "description": "Object",
+              "name": "Target",
+              "type": "objectList"
+            },
+            {
+              "description": "3D capability",
+              "name": "Object3D",
+              "supplementaryInformation": "Scene3D::Base3DBehavior",
+              "type": "behavior"
+            }
+          ],
+          "objectGroups": []
         }
       ],
       "eventsFunctionsFolderStructure": {
@@ -1499,6 +1611,17 @@
           },
           {
             "functionName": "UpdateImage"
+          },
+          {
+            "folderName": "Angle",
+            "children": [
+              {
+                "functionName": "LookAtPosition"
+              },
+              {
+                "functionName": "LookAtObject"
+              }
+            ]
           },
           {
             "functionName": "Color"
