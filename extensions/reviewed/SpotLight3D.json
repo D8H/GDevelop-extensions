@@ -337,6 +337,40 @@
             "    }",
             "",
             "    /**",
+            "     * @param shadowQuality {\"Low\" | \"Medium\" | \"High\"}",
+            "     */",
+            "    setShadowQuality(shadowQuality) {",
+            "        let size = 512;",
+            "        switch (shadowQuality) {",
+            "            case \"Low\":",
+            "            size = 256;",
+            "            break;",
+            "            case \"Medium\":",
+            "            size = 512;",
+            "            break;",
+            "            case \"High\":",
+            "            size = 1024;",
+            "            break;",
+            "        }",
+            "        this.spotLight.shadow.mapSize.width = size;",
+            "        this.spotLight.shadow.mapSize.height = size;",
+            "    }",
+            "",
+            "    /**",
+            "     * @param value {number}",
+            "     */",
+            "    setShadowCameraNearPlane(value) {",
+            "        this.spotLight.shadow.camera.near = value;",
+            "    }",
+            "",
+            "    /**",
+            "     * @param value {number}",
+            "     */",
+            "    setShadowCameraFarPlane(value) {",
+            "        this.spotLight.shadow.camera.far = value;",
+            "    }",
+            "",
+            "    /**",
             "     * @param resourceName {string}",
             "     */",
             "    setImage(resourceName) {",
@@ -556,11 +590,6 @@
                 "const spotLight = new THREE.SpotLight(0xffffff);",
                 "spotLight.position.copy(group.position);",
                 "spotLight.rotation.copy(group.rotation);",
-                "spotLight.castShadow = true;",
-                "spotLight.shadow.mapSize.width = 1024;",
-                "spotLight.shadow.mapSize.height = 1024;",
-                "spotLight.shadow.camera.near = 500;",
-                "spotLight.shadow.camera.far = 4000;",
                 "spotLight.shadow.camera.fov = 30;",
                 "spotLight.add(spotLight.target);",
                 "spotLight.target.position.x = 100;",
@@ -765,6 +794,39 @@
                 },
                 {
                   "type": {
+                    "value": "SpotLight3D::SpotLight3D::SetShadowQuality"
+                  },
+                  "parameters": [
+                    "Object",
+                    "=",
+                    "ShadowQuality",
+                    ""
+                  ]
+                },
+                {
+                  "type": {
+                    "value": "SpotLight3D::SpotLight3D::SetShadowCameraNearPlane"
+                  },
+                  "parameters": [
+                    "Object",
+                    "=",
+                    "ShadowCameraNearPlane",
+                    ""
+                  ]
+                },
+                {
+                  "type": {
+                    "value": "SpotLight3D::SpotLight3D::SetShadowCameraFarPlane"
+                  },
+                  "parameters": [
+                    "Object",
+                    "=",
+                    "ShadowCameraFarPlane",
+                    ""
+                  ]
+                },
+                {
+                  "type": {
                     "value": "SpotLight3D::SpotLight3D::UpdateImage"
                   },
                   "parameters": [
@@ -856,32 +918,18 @@
           "sentence": "Update graphical helper of _PARAM0_",
           "events": [
             {
-              "type": "BuiltinCommonInstructions::Standard",
-              "conditions": [
-                {
-                  "type": {
-                    "value": "SpotLight3D::IsInGameEdition"
-                  },
-                  "parameters": [
-                    "",
-                    ""
-                  ]
-                }
+              "type": "BuiltinCommonInstructions::JsCode",
+              "inlineCode": [
+                "const game = runtimeScene.getGame();",
+                "if (game.isInGameEdition && game.isInGameEdition()) {",
+                "    const spotLightHelper = objects[0].get3DRendererObject();",
+                "    spotLightHelper.update();",
+                "}",
+                ""
               ],
-              "actions": [],
-              "events": [
-                {
-                  "type": "BuiltinCommonInstructions::JsCode",
-                  "inlineCode": [
-                    "const spotLightHelper = objects[0].get3DRendererObject();",
-                    "spotLightHelper.update();",
-                    ""
-                  ],
-                  "parameterObjects": "Object",
-                  "useStrict": true,
-                  "eventsSheetExpanded": false
-                }
-              ]
+              "parameterObjects": "Object",
+              "useStrict": true,
+              "eventsSheetExpanded": false
             }
           ],
           "parameters": [
@@ -1335,6 +1383,7 @@
           "description": "Check if casting shadow.",
           "fullName": "Casting shadow",
           "functionType": "Condition",
+          "group": "3D spot light shadow configuration",
           "name": "IsCastingShadow",
           "sentence": "_PARAM0_ casting shadow",
           "events": [
@@ -1378,6 +1427,7 @@
           "description": "Change if casting shadow.",
           "fullName": "Casting shadow",
           "functionType": "Action",
+          "group": "3D spot light shadow configuration",
           "name": "SetCastingShadow",
           "sentence": "_PARAM0_ casting shadow: _PARAM1_",
           "events": [
@@ -1560,6 +1610,258 @@
             }
           ],
           "objectGroups": []
+        },
+        {
+          "description": "the shadow quality of the object.",
+          "fullName": "Shadow quality",
+          "functionType": "ExpressionAndCondition",
+          "group": "3D spot light shadow configuration",
+          "name": "ShadowQuality",
+          "sentence": "the shadow quality",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [],
+              "actions": [
+                {
+                  "type": {
+                    "value": "SetReturnString"
+                  },
+                  "parameters": [
+                    "ShadowQuality"
+                  ]
+                }
+              ]
+            }
+          ],
+          "expressionType": {
+            "supplementaryInformation": "[\"Low\",\"Medium\",\"High\"]",
+            "type": "stringWithSelector"
+          },
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            }
+          ],
+          "objectGroups": []
+        },
+        {
+          "fullName": "",
+          "functionType": "ActionWithOperator",
+          "getterName": "ShadowQuality",
+          "group": "3D spot light shadow configuration",
+          "name": "SetShadowQuality",
+          "sentence": "",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [],
+              "actions": [
+                {
+                  "type": {
+                    "value": "SetStringVariable"
+                  },
+                  "parameters": [
+                    "ShadowQuality",
+                    "=",
+                    "Value"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BuiltinCommonInstructions::JsCode",
+              "inlineCode": [
+                "const object = objects[0];\r",
+                "const value = eventsFunctionContext.getArgument(\"Value\");\r",
+                "\r",
+                "object.__spotLightAdapter.setShadowQuality(value);"
+              ],
+              "parameterObjects": "Object",
+              "useStrict": true,
+              "eventsSheetExpanded": false
+            }
+          ],
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            }
+          ],
+          "objectGroups": []
+        },
+        {
+          "description": "the shadow camera near plane of the object.",
+          "fullName": "Shadow camera near plane",
+          "functionType": "ExpressionAndCondition",
+          "group": "3D spot light shadow configuration",
+          "name": "ShadowCameraNearPlane",
+          "sentence": "the shadow camera near plane",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [],
+              "actions": [
+                {
+                  "type": {
+                    "value": "SetReturnNumber"
+                  },
+                  "parameters": [
+                    "ShadowCameraNearPlane"
+                  ]
+                }
+              ]
+            }
+          ],
+          "expressionType": {
+            "type": "expression"
+          },
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            }
+          ],
+          "objectGroups": []
+        },
+        {
+          "fullName": "",
+          "functionType": "ActionWithOperator",
+          "getterName": "ShadowCameraNearPlane",
+          "group": "3D spot light shadow configuration",
+          "name": "SetShadowCameraNearPlane",
+          "sentence": "",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [],
+              "actions": [
+                {
+                  "type": {
+                    "value": "SetNumberVariable"
+                  },
+                  "parameters": [
+                    "ShadowCameraNearPlane",
+                    "=",
+                    "Value"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BuiltinCommonInstructions::JsCode",
+              "inlineCode": [
+                "const object = objects[0];\r",
+                "const value = eventsFunctionContext.getArgument(\"Value\");\r",
+                "\r",
+                "object.__spotLightAdapter.setShadowCameraNearPlane(value);\r",
+                ""
+              ],
+              "parameterObjects": "Object",
+              "useStrict": true,
+              "eventsSheetExpanded": false
+            }
+          ],
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            }
+          ],
+          "objectGroups": []
+        },
+        {
+          "description": "the shadow camera far plane of the object.",
+          "fullName": "Shadow camera far plane",
+          "functionType": "ExpressionAndCondition",
+          "group": "3D spot light shadow configuration",
+          "name": "ShadowCameraFarPlane",
+          "sentence": "the shadow camera far plane",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [],
+              "actions": [
+                {
+                  "type": {
+                    "value": "SetReturnNumber"
+                  },
+                  "parameters": [
+                    "ShadowCameraFarPlane"
+                  ]
+                }
+              ]
+            }
+          ],
+          "expressionType": {
+            "type": "expression"
+          },
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            }
+          ],
+          "objectGroups": []
+        },
+        {
+          "fullName": "",
+          "functionType": "ActionWithOperator",
+          "getterName": "ShadowCameraFarPlane",
+          "group": "3D spot light shadow configuration",
+          "name": "SetShadowCameraFarPlane",
+          "sentence": "",
+          "events": [
+            {
+              "type": "BuiltinCommonInstructions::Standard",
+              "conditions": [],
+              "actions": [
+                {
+                  "type": {
+                    "value": "SetNumberVariable"
+                  },
+                  "parameters": [
+                    "ShadowCameraFarPlane",
+                    "=",
+                    "Value"
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BuiltinCommonInstructions::JsCode",
+              "inlineCode": [
+                "const object = objects[0];\r",
+                "const value = eventsFunctionContext.getArgument(\"Value\");\r",
+                "\r",
+                "object.__spotLightAdapter.setShadowCameraFarPlane(value);\r",
+                ""
+              ],
+              "parameterObjects": "Object",
+              "useStrict": true,
+              "eventsSheetExpanded": false
+            }
+          ],
+          "parameters": [
+            {
+              "description": "Object",
+              "name": "Object",
+              "supplementaryInformation": "SpotLight3D::SpotLight3D",
+              "type": "object"
+            }
+          ],
+          "objectGroups": []
         }
       ],
       "eventsFunctionsFolderStructure": {
@@ -1625,10 +1927,33 @@
             "functionName": "SetSmoothing"
           },
           {
-            "functionName": "IsCastingShadow"
-          },
-          {
-            "functionName": "SetCastingShadow"
+            "folderName": "3D spot light shadow configuration",
+            "children": [
+              {
+                "functionName": "IsCastingShadow"
+              },
+              {
+                "functionName": "SetCastingShadow"
+              },
+              {
+                "functionName": "ShadowQuality"
+              },
+              {
+                "functionName": "SetShadowQuality"
+              },
+              {
+                "functionName": "ShadowCameraNearPlane"
+              },
+              {
+                "functionName": "SetShadowCameraNearPlane"
+              },
+              {
+                "functionName": "ShadowCameraFarPlane"
+              },
+              {
+                "functionName": "SetShadowCameraFarPlane"
+              }
+            ]
           }
         ]
       },
@@ -1673,6 +1998,7 @@
           "type": "Resource",
           "label": "Image",
           "description": "Shadow casting must be enable for the image to have any effect.",
+          "group": "Shadow",
           "extraInformation": [
             "image"
           ],
@@ -1684,15 +2010,53 @@
           "value": "true",
           "type": "Boolean",
           "label": "Casting shadow",
-          "advanced": true,
+          "group": "Shadow",
           "name": "IsCastingShadow"
         },
         {
           "value": "1000",
           "type": "Number",
           "label": "Visibilty distance",
-          "advanced": true,
           "name": "VisibilityDistanceMax"
+        },
+        {
+          "value": "Medium",
+          "type": "Choice",
+          "label": "Shadow quality",
+          "group": "Shadow",
+          "choices": [
+            {
+              "label": "",
+              "value": "Low"
+            },
+            {
+              "label": "",
+              "value": "Medium"
+            },
+            {
+              "label": "",
+              "value": "High"
+            }
+          ],
+          "name": "ShadowQuality"
+        },
+        {
+          "value": "100",
+          "type": "Number",
+          "unit": "Pixel",
+          "label": "Shadow camera near plane",
+          "group": "Shadow",
+          "advanced": true,
+          "name": "ShadowCameraNearPlane"
+        },
+        {
+          "value": "2000",
+          "type": "Number",
+          "unit": "Pixel",
+          "label": "Shadow camera far plane",
+          "group": "Shadow",
+          "advanced": true,
+          "name": "ShadowCameraFarPlane"
         }
       ],
       "propertiesFolderStructure": {
@@ -1702,16 +2066,10 @@
             "propertyName": "Color"
           },
           {
-            "propertyName": "Image"
-          },
-          {
             "propertyName": "Intensity"
           },
           {
             "propertyName": "Decay"
-          },
-          {
-            "propertyName": "IsCastingShadow"
           },
           {
             "propertyName": "VisibilityDistanceMax"
@@ -1720,10 +2078,30 @@
             "folderName": "Cone",
             "children": [
               {
-                "propertyName": "Smoothing"
+                "propertyName": "ConeAngle"
               },
               {
-                "propertyName": "ConeAngle"
+                "propertyName": "Smoothing"
+              }
+            ]
+          },
+          {
+            "folderName": "Shadow",
+            "children": [
+              {
+                "propertyName": "IsCastingShadow"
+              },
+              {
+                "propertyName": "ShadowQuality"
+              },
+              {
+                "propertyName": "Image"
+              },
+              {
+                "propertyName": "ShadowCameraNearPlane"
+              },
+              {
+                "propertyName": "ShadowCameraFarPlane"
               }
             ]
           }
