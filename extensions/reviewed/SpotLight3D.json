@@ -1,7 +1,7 @@
 {
   "author": "",
   "category": "Visual effect",
-  "dimension": "",
+  "dimension": "3D",
   "extensionNamespace": "",
   "fullName": "3D spot light",
   "gdevelopVersion": ">=5.5.222",
@@ -973,7 +973,7 @@
           "objectGroups": []
         },
         {
-          "description": "the cone angle of the object.",
+          "description": "the cone angle of the light.",
           "fullName": "Cone angle",
           "functionType": "ExpressionAndCondition",
           "name": "ConeAngle",
@@ -1055,7 +1055,7 @@
           "objectGroups": []
         },
         {
-          "description": "the color of the object.",
+          "description": "the color of the light.",
           "fullName": "Color",
           "functionType": "ExpressionAndCondition",
           "name": "Color",
@@ -1136,7 +1136,7 @@
           "objectGroups": []
         },
         {
-          "description": "the smoothing of the object. Percent of the spotlight cone that is attenuated due to penumbra (between 0 and 1).",
+          "description": "the smoothing of the light . Percent of the spotlight cone that is attenuated due to penumbra (between 0 and 1).",
           "fullName": "Smoothing",
           "functionType": "ExpressionAndCondition",
           "name": "Smoothing",
@@ -1217,7 +1217,7 @@
           "objectGroups": []
         },
         {
-          "description": "the intensity of the object.",
+          "description": "the intensity of the light.",
           "fullName": "Intensity",
           "functionType": "ExpressionAndCondition",
           "name": "Intensity",
@@ -1299,7 +1299,7 @@
           "objectGroups": []
         },
         {
-          "description": "the decay of the object. The amount the light dims along the distance of the light.",
+          "description": "the decay of the light. The amount the light dims along the distance of the light.",
           "fullName": "Decay",
           "functionType": "ExpressionAndCondition",
           "name": "Decay",
@@ -1380,12 +1380,12 @@
           "objectGroups": []
         },
         {
-          "description": "Check if casting shadow.",
-          "fullName": "Casting shadow",
+          "description": "Check if the light is casting shadows.",
+          "fullName": "Shadow casting",
           "functionType": "Condition",
           "group": "3D spot light shadow configuration",
           "name": "IsCastingShadow",
-          "sentence": "_PARAM0_ casting shadow",
+          "sentence": "_PARAM0_ casting shadows",
           "events": [
             {
               "type": "BuiltinCommonInstructions::Standard",
@@ -1424,12 +1424,12 @@
           "objectGroups": []
         },
         {
-          "description": "Change if casting shadow.",
-          "fullName": "Casting shadow",
+          "description": "Change if the light is casting shadows.",
+          "fullName": "Shadow casting",
           "functionType": "Action",
           "group": "3D spot light shadow configuration",
           "name": "SetCastingShadow",
-          "sentence": "_PARAM0_ casting shadow: _PARAM1_",
+          "sentence": "_PARAM0_ casting shadows: _PARAM1_",
           "events": [
             {
               "type": "BuiltinCommonInstructions::Standard",
@@ -1507,7 +1507,7 @@
             },
             {
               "defaultValue": "yes",
-              "description": "IsCastingShadow",
+              "description": "Shadow casting",
               "name": "Value",
               "optional": true,
               "type": "yesorno"
@@ -1612,7 +1612,7 @@
           "objectGroups": []
         },
         {
-          "description": "the shadow quality of the object.",
+          "description": "the shadow quality of the light.",
           "fullName": "Shadow quality",
           "functionType": "ExpressionAndCondition",
           "group": "3D spot light shadow configuration",
@@ -1696,7 +1696,7 @@
           "objectGroups": []
         },
         {
-          "description": "the shadow camera near plane of the object.",
+          "description": "the shadow camera near plane of the light.",
           "fullName": "Shadow camera near plane",
           "functionType": "ExpressionAndCondition",
           "group": "3D spot light shadow configuration",
@@ -1780,7 +1780,7 @@
           "objectGroups": []
         },
         {
-          "description": "the shadow camera far plane of the object.",
+          "description": "the shadow camera far plane of the light.",
           "fullName": "Shadow camera far plane",
           "functionType": "ExpressionAndCondition",
           "group": "3D spot light shadow configuration",
@@ -2009,7 +2009,7 @@
         {
           "value": "true",
           "type": "Boolean",
-          "label": "Casting shadow",
+          "label": "Shadow casting",
           "group": "Shadow",
           "name": "IsCastingShadow"
         },
